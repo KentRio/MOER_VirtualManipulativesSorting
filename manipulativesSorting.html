@@ -13,7 +13,7 @@ var xposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var yposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var xposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var yposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
-var colors = ["#E0B9EB","#D6F0CE","#99E8E0","#F2AABF"]
+var colors = ["#E0B9EB","#D6F0CE","#99E8E0","#F2AABF"];
 var fadeDone = true;
 
 $(function() {
@@ -36,26 +36,85 @@ $(function() {
       numlist[6] = parseInt(p4);
       numlist[7] = parseInt(n4);
 	}
+	initChipPositions();
 	updateAllCanvas();
-})
+});
 
-$(window).load(function(){
-  for (var j=0;j<4;j++) {
-    xposp[j] = new Array(7);
-    xposn[j] = new Array(7);
-    yposp[j] = new Array(7);
-    yposn[j] = new Array(7);
-    for (var i=0;i<7;i++) {
-      xposp[j][i] = 25*Math.round(Math.random()*5)+2;
-      yposp[j][i] = i*22+2;
-      xposn[j][i] = 25*Math.round(Math.random()*5)+13;
-      yposn[j][i] = i*22+7;
+function initChipPositions() {
+  var chipSize = 20;
+  var minDistance = 22; // Ensures at least a 2px gap between chips so they never touch or overlap
+  var canvasWidth = 170;
+  var canvasHeight = 170;
+  var minX = 4, maxX = canvasWidth - chipSize - 4;
+  var minY = 4, maxY = canvasHeight - chipSize - 4;
 
+  for (var j = 0; j < 4; j++) {
+    var pCount = Math.max(7, numlist[j * 2] || 0);
+    var nCount = Math.max(7, numlist[j * 2 + 1] || 0);
+    var totalChips = pCount + nCount;
+    var placed = [];
+
+    // Collision check: returns true if (x, y) overlaps with any existing chip
+    function collides(x, y) {
+      for (var k = 0; k < placed.length; k++) {
+        if (Math.abs(placed[k].x - x) < minDistance && Math.abs(placed[k].y - y) < minDistance) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Place each chip at a guaranteed non-overlapping coordinate
+    for (var c = 0; c < totalChips; c++) {
+      var found = false;
+      // 1. Try random placement first for natural, organic scatter
+      for (var attempt = 0; attempt < 250; attempt++) {
+        var rx = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+        var ry = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+        if (!collides(rx, ry)) {
+          placed.push({ x: rx, y: ry });
+          found = true;
+          break;
+        }
+      }
+      // 2. Systematic grid scan fallback if random sampling doesn't find a spot
+      if (!found) {
+        gridScan:
+        for (var gy = minY; gy <= maxY; gy += 4) {
+          for (var gx = minX; gx <= maxX; gx += 4) {
+            if (!collides(gx, gy)) {
+              placed.push({ x: gx, y: gy });
+              found = true;
+              break gridScan;
+            }
+          }
+        }
+      }
+      // 3. Absolute safety fallback
+      if (!found) {
+        placed.push({ x: minX + (c % 6) * minDistance, y: minY + Math.floor(c / 6) * minDistance });
+      }
+    }
+
+    xposp[j] = new Array(pCount);
+    yposp[j] = new Array(pCount);
+    xposn[j] = new Array(nCount);
+    yposn[j] = new Array(nCount);
+
+    for (var i = 0; i < pCount; i++) {
+      xposp[j][i] = placed[i].x;
+      yposp[j][i] = placed[i].y;
+    }
+    for (var i = 0; i < nCount; i++) {
+      xposn[j][i] = placed[pCount + i].x;
+      yposn[j][i] = placed[pCount + i].y;
     }
   }
- updateAllCanvas() 
- 
-})
+}
+
+$(window).load(function(){
+  updateAllCanvas();
+});
 
 function changeImage(toggle) {
   if (fadeDone) {
@@ -67,29 +126,21 @@ function changeImage(toggle) {
 function changeImagePart2(toggle) {
 //  console.log(toggle);
   var p = numlist[toggle];
-  var n = numlist[toggle+1]
+  var n = numlist[toggle+1];
   numlist[toggle] = numlist[toggle+2];
   numlist[toggle+1] = numlist[toggle+3];
   numlist[toggle+2] = p;
   numlist[toggle+3] = n;
   var j = toggle/2;  
-  var c = colors[j]
+  var c = colors[j];
   colors[j] = colors[j+1];
   colors[j+1] = c;
-  for (var i = 0; i < 7; i++) {
-    var xpos = xposp[j][i];
-    var xneg = xposn[j][i];
-    var ypos = yposp[j][i];
-    var yneg = yposn[j][i];
-    xposp[j][i] = xposp[j+1][i];
-    xposn[j][i] = xposn[j+1][i];
-    yposp[j][i] = yposp[j+1][i];
-    yposn[j][i] = yposn[j+1][i];
-    xposp[j+1][i] = xpos;
-    xposn[j+1][i] = xneg;
-    yposp[j+1][i] = ypos;
-    yposn[j+1][i] = yneg;
-  }
+
+  var tempXp = xposp[j]; xposp[j] = xposp[j+1]; xposp[j+1] = tempXp;
+  var tempYp = yposp[j]; yposp[j] = yposp[j+1]; yposp[j+1] = tempYp;
+  var tempXn = xposn[j]; xposn[j] = xposn[j+1]; xposn[j+1] = tempXn;
+  var tempYn = yposn[j]; yposn[j] = yposn[j+1]; yposn[j+1] = tempYn;
+
 //  var mc1 = toggle+1, mc2 = toggle+2;
   fadeInToggledCanvas(toggle);
 }
@@ -165,12 +216,12 @@ function myCanvas(mc,pos,neg,xy,alpha) {
     var img = new Image(20,20);
     img.src = "poschipsmall.png";
     for (var i=0;i<pos;i++) {
-      ctx.drawImage(img,xposp[xy][i],yposp[xy][i]);
+      ctx.drawImage(img,xposp[xy][i],yposp[xy][i],20,20);
     }
     img = new Image(20,20);
     img.src = "negchipsmall.png";
     for (var i = 0; i < neg; i++) {
-      ctx.drawImage(img,xposn[xy][i],yposn[xy][i]);
+      ctx.drawImage(img,xposn[xy][i],yposn[xy][i],20,20);
     }
 }
 
