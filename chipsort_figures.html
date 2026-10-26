@@ -167,10 +167,10 @@ function changeImagePart2(toggle) {
 }
 
 function updateAllFigures() {
-    updateFigure(document.getElementById("myFigure1"), numlist[0], numlist[1], 0);
-    updateFigure(document.getElementById("myFigure2"), numlist[2], numlist[3], 1);
-    updateFigure(document.getElementById("myFigure3"), numlist[4], numlist[5], 2);
-    updateFigure(document.getElementById("myFigure4"), numlist[6], numlist[7], 3);
+    updateFigure(document.getElementById("myFigure1"), numlist[0], numlist[1], 0, 1);
+    updateFigure(document.getElementById("myFigure2"), numlist[2], numlist[3], 1, 2);
+    updateFigure(document.getElementById("myFigure3"), numlist[4], numlist[5], 2, 3);
+    updateFigure(document.getElementById("myFigure4"), numlist[6], numlist[7], 3, 4);
     var n1 = numlist[0]-numlist[1];
     var n2 = numlist[2]-numlist[3];
     var n3 = numlist[4]-numlist[5];
@@ -193,7 +193,7 @@ function fadeInToggledFigures(toggle) {
     var t1 = (toggle/2)+1, t2 = (toggle/2)+2;
     var f1 = document.getElementById("myFigure" + t1);
     var f2 = document.getElementById("myFigure" + t2);
-    fadeIn(f1, numlist[toggle], numlist[toggle+1], toggle/2, f2, numlist[toggle+2], numlist[toggle+3], toggle/2+1);
+    fadeIn(f1, numlist[toggle], numlist[toggle+1], toggle/2, t1, f2, numlist[toggle+2], numlist[toggle+3], toggle/2+1, t2);
     var n1 = numlist[0]-numlist[1];
     var n2 = numlist[2]-numlist[3];
     var n3 = numlist[4]-numlist[5];
@@ -207,14 +207,15 @@ function fadeInToggledFigures(toggle) {
 /**
  * Build (or rebuild) a single figure card.
  * - Uses HTML5 <figure> instead of <canvas>
- * - Sets an accessible name that states the number of positive and negative tiles
+ * - Sets an accessible name that leads with the figure number, then states the number of positive and negative tiles
  * - Places individual <img> elements for each tile so the content remains in the DOM
  */
-function updateFigure(fig, pos, neg, xy) {
+function updateFigure(fig, pos, neg, xy, figNum) {
   if (!fig) return;
 
   // Accessible name for the whole card (screen readers announce this)
-  var altText = "Card with " + pos + " positive tile" + (pos === 1 ? "" : "s") +
+  // Leads with the figure number so users know which card is being described
+  var altText = "Figure " + figNum + ": Card with " + pos + " positive tile" + (pos === 1 ? "" : "s") +
                 " and " + neg + " negative tile" + (neg === 1 ? "" : "s");
   fig.setAttribute("aria-label", altText);
   // Also set title for mouse users / older AT
@@ -276,10 +277,10 @@ function fadeOut(f1, pos1, neg1, xy1, f2, pos2, neg2, xy2, toggle) {
     }, 5);
 }
 
-function fadeIn(f1, pos1, neg1, xy1, f2, pos2, neg2, xy2) {
+function fadeIn(f1, pos1, neg1, xy1, figNum1, f2, pos2, neg2, xy2, figNum2) {
     // Rebuild content first (after the swap in changeImagePart2)
-    updateFigure(f1, pos1, neg1, xy1);
-    updateFigure(f2, pos2, neg2, xy2);
+    updateFigure(f1, pos1, neg1, xy1, figNum1);
+    updateFigure(f2, pos2, neg2, xy2, figNum2);
 
     var alpha = 0.0;
     f1.style.opacity = 0;
@@ -372,22 +373,22 @@ img.base {
 <body>
 <div class="listcontainer1">
   <div class="listitem">
-    <figure id="myFigure1" class="chip-figure" role="img" aria-label="Card with 7 positive tiles and 7 negative tiles">
+    <figure id="myFigure1" class="chip-figure" role="img" aria-label="Figure 1">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure2" class="chip-figure" role="img" aria-label="Card with 4 positive tiles and 1 negative tile">
+    <figure id="myFigure2" class="chip-figure" role="img" aria-label="Figure 2">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure3" class="chip-figure" role="img" aria-label="Card with 6 positive tiles and 4 negative tiles">
+    <figure id="myFigure3" class="chip-figure" role="img" aria-label="Figure 3">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure4" class="chip-figure" role="img" aria-label="Card with 3 positive tiles and 5 negative tiles">
+    <figure id="myFigure4" class="chip-figure" role="img" aria-label="Figure 4">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
