@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+
+<title>Simple Chip Sorting Virtual Manipulative</title>
+<script type="text/javascript">
+var qn; 
+var numlist = [7,7,4,1,6,4,3,5];
+var xposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
+var yposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
+var xposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
+var yposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
+var colors = ["#E0B9EB","#D6F0CE","#99E8E0","#F2AABF"]
+var fadeDone = true;
+
+$(function() {
+    qn = getParameterByName("qn");
+	var p1 = getParameterByName("p1");
+	var n1 = getParameterByName("n1");
+	var p2 = getParameterByName("p2");
+	var n2 = getParameterByName("n2");
+	var p3 = getParameterByName("p3");
+	var n3 = getParameterByName("n3");
+	var p4 = getParameterByName("p4");
+	var n4 = getParameterByName("n4");
+	if (p1 != "") {
+      numlist[0] = parseInt(p1);
+      numlist[1] = parseInt(n1);
+      numlist[2] = parseInt(p2);
+      numlist[3] = parseInt(n2);
+      numlist[4] = parseInt(p3);
+      numlist[5] = parseInt(n3);
+      numlist[6] = parseInt(p4);
+      numlist[7] = parseInt(n4);
+	}
+	updateAllCanvas();
+})
+
+$(window).load(function(){
+  for (var j=0;j<4;j++) {
+    xposp[j] = new Array(7);
+    xposn[j] = new Array(7);
+    yposp[j] = new Array(7);
+    yposn[j] = new Array(7);
+    for (var i=0;i<7;i++) {
+      xposp[j][i] = 25*Math.round(Math.random()*5)+2;
+      yposp[j][i] = i*22+2;
+      xposn[j][i] = 25*Math.round(Math.random()*5)+13;
+      yposn[j][i] = i*22+7;
+
+    }
+  }
+ updateAllCanvas() 
+ 
+})
+
+function changeImage(toggle) {
+  if (fadeDone) {
+    fadeDone = false;
+    fadeOutToggledCanvas(toggle); 
+  }
+}
+
+function changeImagePart2(toggle) {
+//  console.log(toggle);
+  var p = numlist[toggle];
+  var n = numlist[toggle+1]
+  numlist[toggle] = numlist[toggle+2];
+  numlist[toggle+1] = numlist[toggle+3];
+  numlist[toggle+2] = p;
+  numlist[toggle+3] = n;
+  var j = toggle/2;  
+  var c = colors[j]
+  colors[j] = colors[j+1];
+  colors[j+1] = c;
+  for (var i = 0; i < 7; i++) {
+    var xpos = xposp[j][i];
+    var xneg = xposn[j][i];
+    var ypos = yposp[j][i];
+    var yneg = yposn[j][i];
+    xposp[j][i] = xposp[j+1][i];
+    xposn[j][i] = xposn[j+1][i];
+    yposp[j][i] = yposp[j+1][i];
+    yposn[j][i] = yposn[j+1][i];
+    xposp[j+1][i] = xpos;
+    xposn[j+1][i] = xneg;
+    yposp[j+1][i] = ypos;
+    yposn[j+1][i] = yneg;
+  }
+//  var mc1 = toggle+1, mc2 = toggle+2;
+  fadeInToggledCanvas(toggle);
+}
+
+function updateAllCanvas() {
+    var mc = document.getElementById("myCanvas1");
+    updateCanvas(mc,numlist[0],numlist[1],0);
+    mc = document.getElementById("myCanvas2");
+    updateCanvas(mc,numlist[2],numlist[3],1);
+    mc = document.getElementById("myCanvas3");
+    updateCanvas(mc,numlist[4],numlist[5],2);
+    mc = document.getElementById("myCanvas4");
+    updateCanvas(mc,numlist[6],numlist[7],3);
+    var n1 = numlist[0]-numlist[1];
+    var n2 = numlist[2]-numlist[3];
+    var n3 = numlist[4]-numlist[5];
+    var n4 = numlist[6]-numlist[7];
+    var outtxt = ''+n1+','+n2+','+n3+','+n4; 
+	if (qn != "") {
+		parent.postMessage(qn+"::"+outtxt,'*');
+//		console.log(qn+"::"+outtxt,'*');
+		
+	}	
+}
+
+function fadeOutToggledCanvas(toggle) {
+    var t1 = (toggle/2)+1;
+    var t2 = (toggle/2)+2;
+    var c1 = "myCanvas" +t1;
+    var c2 = "myCanvas" +t2;
+    var mc1 = document.getElementById(c1);
+    var mc2 = document.getElementById(c2);
+//    console.log(toggle, t1, t2, c1, c2);
+    fadeOut(mc1,numlist[toggle],numlist[toggle+1],toggle/2,mc2,numlist[toggle+2],numlist[toggle+3],toggle/2+1,toggle);
+}
+
+function fadeInToggledCanvas(toggle) {
+    var t1 = (toggle/2)+1, t2 = (toggle/2)+2;
+    var c1 = "myCanvas"+t1;
+    var c2 = "myCanvas"+t2;
+    var mc1 = document.getElementById(c1);
+    var mc2 = document.getElementById(c2);
+    fadeIn(mc1,numlist[toggle],numlist[toggle+1],toggle/2,mc2,numlist[toggle+2],numlist[toggle+3],toggle/2+1);
+    var n1 = numlist[0]-numlist[1];
+    var n2 = numlist[2]-numlist[3];
+    var n3 = numlist[4]-numlist[5];
+    var n4 = numlist[6]-numlist[7];
+    var outtxt = ''+n1+','+n2+','+n3+','+n4; 
+	if (qn != "") {
+		parent.postMessage(qn+"::"+outtxt,'*');
+//		console.log(qn+"::"+outtxt,'*');
+		
+	}	
+}
+
+
+// dumb function.  Just keeping it the same as the others.
+function updateCanvas(mc,pos,neg,xy) {
+  myCanvas(mc,pos,neg,xy,1);
+}
+
+function myCanvas(mc,pos,neg,xy,alpha) {
+    var ctx = mc.getContext("2d");
+    ctx.clearRect(0, 0, 180, 180);
+    ctx.beginPath();
+    ctx.rect(0, 0, 200, 200);
+    ctx.fillStyle = 'yellow';
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle= colors[xy];
+    ctx.fillRect(0, 0, 180, 180);
+    var img = new Image(20,20);
+    img.src = "poschipsmall.png";
+    for (var i=0;i<pos;i++) {
+      ctx.drawImage(img,xposp[xy][i],yposp[xy][i]);
+    }
+    img = new Image(20,20);
+    img.src = "negchipsmall.png";
+    for (var i = 0; i < neg; i++) {
+      ctx.drawImage(img,xposn[xy][i],yposn[xy][i]);
+    }
+}
+
+function fadeOut(mc1,pos1,neg1,xy1,mc2,pos2,neg2,xy2,toggle) {
+    var alpha = 1.0, //full opacity
+    intervalFadeOut = setInterval(function () {
+      myCanvas(mc1,pos1,neg1,xy1,alpha);
+      myCanvas(mc2,pos2,neg2,xy2,alpha);
+      alpha = alpha - 0.05; // decrease opacity (fade out)
+      if (alpha <= 0) {
+         clearInterval(intervalFadeOut);
+         changeImagePart2(toggle);     
+      }
+    }, 5); 
+}
+
+function fadeIn(mc1,pos1,neg1,xy1,mc2,pos2,neg2,xy2) {
+    var alpha = 0.0,   // zero opacity
+    intervalFadeIn = setInterval(function () {
+      myCanvas(mc1,pos1,neg1,xy1,alpha);
+      myCanvas(mc2,pos2,neg2,xy2,alpha);
+      alpha = alpha + 0.05; // increase opacity (fade in)
+      if (alpha >= 1) {
+         clearInterval(intervalFadeIn);
+         fadeDone = true;
+      }
+   }, 5); 
+}
+
+
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+</script>
+<style>
+div.listcontainer1 {
+	position:relative;
+	width:900px;
+	height:180px;
+
+  }
+  div.listcontainer2 {
+	position:relative;
+	left:170px;
+	width:800px;
+	height:25px;
+  }
+
+div.listitem {
+	float:left;
+	width:175px;
+	height:175px;
+	text-align:center;
+	border: 2px solid;
+	background-color:#ccc;
+}  
+div.togglepadding {
+	float:left;
+	width:200px;
+}
+div.toggle {
+	float:left;
+	width:183px;
+	
+}
+a.rollover {
+    display: block;
+	width: 25px;
+	height: 25px;
+	text-decoration: none;
+	}
+
+a.rollover:hover {
+ background-color:blue;
+	}
+a.rollover:active {
+	background-color:navy;
+}
+img.base {
+  width:200px;
+}
+</style>
+</head>
+
+<body>
+<div class="listcontainer1">
+  <div class="listitem"><canvas id="myCanvas1" width="170" height="170" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+  <div class="listitem"><canvas id="myCanvas2" width="170" height="170" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+  <div class="listitem"><canvas id="myCanvas3" width="170" height="170" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+  <div class="listitem"><canvas id="myCanvas4" width="170" height="170" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+</div>
+<div class="listcontainer2">
+  <div class="toggle"><a href="#" class="rollover" title="Toggle1" id="t1" onclick="changeImage(0)"><img src="refreshsmall.png" width="25" height="25" /></a></div>
+  <div class="toggle"><a href="#" class="rollover" title="Toggle2" id="t2" onclick="changeImage(2)"><img src="refreshsmall.png" width="25" height="25" /></a></div>
+  <div class="toggle"><a href="#" class="rollover" title="Toggle3" id="t3" onclick="changeImage(4)"><img src="refreshsmall.png" width="25" height="25" /></a></div>
+</div>
+
+</body>
+</html>
