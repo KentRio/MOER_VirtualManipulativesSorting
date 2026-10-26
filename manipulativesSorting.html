@@ -13,7 +13,7 @@ var xposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var yposp = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var xposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var yposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
-var colors = ["#E0B9EB","#D6F0CE","#99E8E0","#F2AABF"];
+var colors = ["#3E1F5A", "#085041", "#102A45", "#641E30"];
 var fadeDone = true;
 
 var posChipImg = new Image();
@@ -224,7 +224,7 @@ function myCanvas(mc,pos,neg,xy,alpha) {
     ctx.clearRect(0, 0, 180, 180);
     ctx.beginPath();
     ctx.rect(0, 0, 200, 200);
-    ctx.fillStyle = 'yellow';
+    ctx.fillStyle = '#1e1e24';
     ctx.fill();
     ctx.stroke();
     ctx.globalAlpha = alpha;
@@ -293,8 +293,9 @@ div.listitem {
 	width:175px;
 	height:175px;
 	text-align:center;
-	border: 2px solid;
-	background-color:#ccc;
+	border: 2px solid #444;
+	border-radius: 4px;
+	background-color:#1e1e24;
 }  
 div.togglepadding {
 	float:left;
@@ -326,16 +327,16 @@ img.base {
 
 <body>
 <div class="listcontainer1">
-  <div class="listitem"><canvas id="myCanvas1" width="170" height="170" style="border:1px solid #d3d3d3;">
+  <div class="listitem"><canvas id="myCanvas1" width="170" height="170" style="border:1px solid #333;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
-  <div class="listitem"><canvas id="myCanvas2" width="170" height="170" style="border:1px solid #d3d3d3;">
+  <div class="listitem"><canvas id="myCanvas2" width="170" height="170" style="border:1px solid #333;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
-  <div class="listitem"><canvas id="myCanvas3" width="170" height="170" style="border:1px solid #d3d3d3;">
+  <div class="listitem"><canvas id="myCanvas3" width="170" height="170" style="border:1px solid #333;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
-  <div class="listitem"><canvas id="myCanvas4" width="170" height="170" style="border:1px solid #d3d3d3;">
+  <div class="listitem"><canvas id="myCanvas4" width="170" height="170" style="border:1px solid #333;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 </div>
