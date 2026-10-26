@@ -166,11 +166,30 @@ function changeImagePart2(toggle) {
   fadeInToggledFigures(toggle);
 }
 
+var initialAnnouncementDone = false;
+
 function updateAllFigures() {
     updateFigure(document.getElementById("myFigure1"), numlist[0], numlist[1], 0, 1);
     updateFigure(document.getElementById("myFigure2"), numlist[2], numlist[3], 1, 2);
     updateFigure(document.getElementById("myFigure3"), numlist[4], numlist[5], 2, 3);
     updateFigure(document.getElementById("myFigure4"), numlist[6], numlist[7], 3, 4);
+
+    // On first load, announce all four figures so screen readers hear them without requiring interaction
+    if (!initialAnnouncementDone) {
+      initialAnnouncementDone = true;
+      var live = document.getElementById("figures-live");
+      if (live) {
+        var msg = "Figure 1: " + numlist[0] + " positive and " + numlist[1] + " negative tiles. " +
+                  "Figure 2: " + numlist[2] + " positive and " + numlist[3] + " negative tiles. " +
+                  "Figure 3: " + numlist[4] + " positive and " + numlist[5] + " negative tiles. " +
+                  "Figure 4: " + numlist[6] + " positive and " + numlist[7] + " negative tiles. " +
+                  "Use Tab to move between figures.";
+        // Clear then set so the change is detected by assistive technology
+        live.textContent = "";
+        setTimeout(function () { live.textContent = msg; }, 50);
+      }
+    }
+
     var n1 = numlist[0]-numlist[1];
     var n2 = numlist[2]-numlist[3];
     var n3 = numlist[4]-numlist[5];
@@ -220,6 +239,9 @@ function updateFigure(fig, pos, neg, xy, figNum) {
   fig.setAttribute("aria-label", altText);
   // Also set title for mouse users / older AT
   fig.setAttribute("title", altText);
+  // Keep the figure in the tab order so keyboard and screen-reader users can move between cards
+  fig.setAttribute("tabindex", "0");
+  fig.setAttribute("role", "img");
 
   // Clear previous content
   while (fig.firstChild) {
@@ -342,6 +364,24 @@ figure.chip-figure {
 	border: 1px solid #4a4d57;
 	box-sizing: border-box;
 	overflow: hidden;
+	outline: none;
+}
+figure.chip-figure:focus {
+	outline: 3px solid #0066cc;
+	outline-offset: 2px;
+	box-shadow: 0 0 0 2px #fff;
+}
+/* Visually hidden but available to screen readers */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 div.togglepadding {
@@ -371,24 +411,26 @@ img.base {
 </head>
 
 <body>
-<div class="listcontainer1">
+<p class="sr-only" id="figures-instruction">Four chip figures follow. Use the Tab key to move from one figure to the next. Each figure announces how many positive tiles and negative tiles it contains.</p>
+<div id="figures-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<div class="listcontainer1" role="group" aria-labelledby="figures-instruction">
   <div class="listitem">
-    <figure id="myFigure1" class="chip-figure" role="img" aria-label="Figure 1">
+    <figure id="myFigure1" class="chip-figure" role="img" tabindex="0" aria-label="Figure 1">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure2" class="chip-figure" role="img" aria-label="Figure 2">
+    <figure id="myFigure2" class="chip-figure" role="img" tabindex="0" aria-label="Figure 2">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure3" class="chip-figure" role="img" aria-label="Figure 3">
+    <figure id="myFigure3" class="chip-figure" role="img" tabindex="0" aria-label="Figure 3">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
   <div class="listitem">
-    <figure id="myFigure4" class="chip-figure" role="img" aria-label="Figure 4">
+    <figure id="myFigure4" class="chip-figure" role="img" tabindex="0" aria-label="Figure 4">
       <!-- Chips injected by JavaScript -->
     </figure>
   </div>
