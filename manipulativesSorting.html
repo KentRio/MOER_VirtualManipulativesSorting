@@ -16,6 +16,22 @@ var yposn = [[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7]];
 var colors = ["#E0B9EB","#D6F0CE","#99E8E0","#F2AABF"];
 var fadeDone = true;
 
+var posChipImg = new Image();
+var negChipImg = new Image();
+var chipImagesLoaded = 0;
+var chipPositionsInitialized = false;
+
+function checkChipImagesLoaded() {
+  chipImagesLoaded++;
+  if (chipImagesLoaded >= 2 && chipPositionsInitialized) {
+    updateAllCanvas();
+  }
+}
+posChipImg.onload = checkChipImagesLoaded;
+negChipImg.onload = checkChipImagesLoaded;
+posChipImg.src = "hexagon-plus-sharp-solid-full.svg";
+negChipImg.src = "hexagon-minus-solid-full.svg";
+
 $(function() {
     qn = getParameterByName("qn");
 	var p1 = getParameterByName("p1");
@@ -37,6 +53,7 @@ $(function() {
       numlist[7] = parseInt(n4);
 	}
 	initChipPositions();
+	chipPositionsInitialized = true;
 	updateAllCanvas();
 });
 
@@ -213,15 +230,11 @@ function myCanvas(mc,pos,neg,xy,alpha) {
     ctx.globalAlpha = alpha;
     ctx.fillStyle= colors[xy];
     ctx.fillRect(0, 0, 180, 180);
-    var img = new Image(20,20);
-    img.src = "poschipsmall.png";
     for (var i=0;i<pos;i++) {
-      ctx.drawImage(img,xposp[xy][i],yposp[xy][i],20,20);
+      ctx.drawImage(posChipImg,xposp[xy][i],yposp[xy][i],20,20);
     }
-    img = new Image(20,20);
-    img.src = "negchipsmall.png";
     for (var i = 0; i < neg; i++) {
-      ctx.drawImage(img,xposn[xy][i],yposn[xy][i],20,20);
+      ctx.drawImage(negChipImg,xposn[xy][i],yposn[xy][i],20,20);
     }
 }
 
